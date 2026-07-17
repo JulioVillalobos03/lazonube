@@ -1,5 +1,4 @@
 # Architecture Decision Records
 
-The Phase 0 ADR filenames are reserved below. Their decisions remain proposed
-until the product master specification is supplied and the owner reviews the
-full context and alternatives. Do not mark them accepted from filenames alone.
+The accepted Phase 0 decisions are recorded in this directory. A decision is
+superseded by a new ADR rather than editing its historical outcome.

@@ -1,20 +1,25 @@
 # ADR-015 — Job Payload Versioning
 
-- Status: proposed
-- Date: 2026-07-16
+- Status: accepted
+- Date: 2026-07-13
 
 ## Context
 
-Workers may process jobs created by older application versions.
+Persistent jobs can remain queued while web and worker deployments transition
+between releases.
 
 ## Decision
 
-Pending the product master specification and the first job contract.
+Every persistent job includes an integer `jobVersion`. Processors support the
+current and at least the previous compatible version. Incompatible changes use
+a new job name or version. Old processors remain until no pending jobs require
+them.
 
 ## Consequences
 
-No production job payloads are defined during Phase 0.
+Deployments tolerate a brief mixed-version window and job retirement requires
+queue inspection.
 
 ## Alternatives considered
 
-Pending.
+Unversioned payloads and immediate removal of previous processors were rejected.

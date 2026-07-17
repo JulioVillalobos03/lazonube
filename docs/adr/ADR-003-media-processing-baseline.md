@@ -1,20 +1,26 @@
 # ADR-003 — Media Processing Baseline
 
-- Status: proposed
-- Date: 2026-07-16
+- Status: accepted
+- Date: 2026-07-13
 
 ## Context
 
-Media processing requirements are not part of the repository setup guide.
+User media must be private until it is decoded, sanitized, and transformed by a
+resource-isolated process.
 
 ## Decision
 
-Pending the product master specification.
+Sharp processes images in the worker. Originals are limited to 12 MB and
+12,000 × 12,000 pixels. Initial outputs are AVIF and WebP with fallback when
+needed, using `cover-1600`, `gallery-1200`, and `thumb-400` variants. Processing
+removes EXIF and geolocation. Media concurrency starts at two. FFmpeg is
+installed only in workers that process audio.
 
 ## Consequences
 
-Phase 0 provides S3-compatible local infrastructure but no processing pipeline.
+Originals remain private, HTTP requests do not perform heavy processing, and
+worker CPU and memory must be monitored.
 
 ## Alternatives considered
 
-Pending.
+Processing in Nitro requests and publishing originals directly were rejected.

@@ -1,21 +1,27 @@
 # ADR-014 — PostgreSQL Connections and Pooling
 
-- Status: proposed
-- Date: 2026-07-16
+- Status: accepted
+- Date: 2026-07-13
 
 ## Context
 
-Nuxt and the worker will have different runtime connection profiles.
+Web, worker, cron, migration, CI, and pg-boss processes share a finite
+PostgreSQL connection budget.
 
 ## Decision
 
-Phase 0 uses Prisma's PostgreSQL driver adapter and a development singleton. The
-deployment pool sizing policy awaits measured staging behavior.
+Prisma 7 uses `@prisma/adapter-pg` and `pg` in the Node runtime. Web and worker
+use separate pools with configurable limits. Runtime uses `DATABASE_URL` over
+Railway private networking when available. `DIRECT_DATABASE_URL` is reserved
+for migrations when required. Replica changes require recalculating the full
+connection budget.
 
 ## Consequences
 
-Connection limits must be configured before production scaling.
+Pool settings and service scaling must be reviewed together and monitored in
+staging.
 
 ## Alternatives considered
 
-Pending.
+Unbounded pools and scaling replicas without connection budgeting were
+rejected.

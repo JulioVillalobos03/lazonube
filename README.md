@@ -11,8 +11,14 @@ Prisma, and PostgreSQL.
 
 ## Local setup
 
+Use Node.js 24 before installing dependencies. With Homebrew on macOS:
+
 ```bash
-nvm use
+export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
+node --version
+```
+
+```bash
 cp .env.example .env
 docker compose up -d
 npm ci
@@ -24,6 +30,9 @@ npm run dev
 The application runs at `http://localhost:3000`. Mailpit is available at
 `http://localhost:8025`. PostgreSQL is exposed locally on port `5433` to avoid
 conflicting with a system PostgreSQL installation.
+
+The worker is intentionally a heartbeat-only runtime during Phase 0. It can run
+locally with `npm run worker:dev` and gains pg-boss processors in later phases.
 
 Health endpoints:
 

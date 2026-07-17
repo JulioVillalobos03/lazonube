@@ -1,22 +1,24 @@
 # ADR-010 — PostgreSQL Testing Strategy
 
-- Status: proposed
-- Date: 2026-07-16
+- Status: accepted
+- Date: 2026-07-13
 
 ## Context
 
-Persistence behavior must be tested against PostgreSQL rather than an in-memory
-substitute.
+Transactional rules, PostgreSQL constraints, indexes, and concurrency behavior
+cannot be validated reliably with a different database engine.
 
 ## Decision
 
-Integration and E2E workflows use PostgreSQL 18 service containers. Local
-integration tests use the PostgreSQL service from Docker Compose.
+Local and CI integration tests use PostgreSQL 18. GitHub Actions uses the
+`postgres:18-alpine` service image. Integration tests apply real migrations.
+Concurrency tests use real transactions and separate connections. SQLite is not
+used as a persistence substitute.
 
 ## Consequences
 
-Persistence tests require a real database and may take longer than unit tests.
+Integration suites require PostgreSQL and take longer than isolated unit tests.
 
 ## Alternatives considered
 
-SQLite and mocked database clients were rejected for persistence validation.
+SQLite and mocked Prisma clients were rejected for persistence validation.

@@ -1,20 +1,26 @@
 # ADR-005 — Public Cache Invalidation
 
-- Status: proposed
-- Date: 2026-07-16
+- Status: accepted
+- Date: 2026-07-13
 
 ## Context
 
-Public caching depends on final publishing and domain behavior.
+Public invitations need CDN performance while publishing and private guest
+contexts require strict isolation.
 
 ## Decision
 
-Pending the product master specification.
+Derived assets use immutable names and long caching. Public invitation DTOs use
+an ETag based on `invitationVersionId` and short CDN caching with revalidation.
+Publishing, pausing, resuming, or restoring enqueues
+`InvalidatePublicInvitationCache`. Private guest contexts never share cache
+entries.
 
 ## Consequences
 
-No cache invalidation behavior is implemented during Phase 0.
+Every publication state transition must reliably schedule invalidation and
+cache keys must include access context where relevant.
 
 ## Alternatives considered
 
-Pending.
+No caching and long-lived mutable invitation caches were rejected.

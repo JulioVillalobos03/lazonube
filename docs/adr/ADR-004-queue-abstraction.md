@@ -1,20 +1,25 @@
 # ADR-004 — Queue Abstraction
 
-- Status: proposed
-- Date: 2026-07-16
+- Status: accepted
+- Date: 2026-07-13
 
 ## Context
 
-The foundation includes pg-boss and a separate worker entry point.
+Asynchronous work must be durable without introducing Redis prematurely or
+coupling domain services to a queue vendor.
 
 ## Decision
 
-The application-facing queue abstraction remains pending the master specification.
+Use pg-boss over PostgreSQL behind a `QueueClient` interface. Payloads contain
+`jobVersion`, `correlationId`, and minimal identifiers. Processors live in a
+registry separate from use cases.
 
 ## Consequences
 
-No job payloads or processors are defined during Phase 0.
+PostgreSQL connection and workload budgets include the queue. Moving to Redis
+or BullMQ requires metrics and a replacement ADR.
 
 ## Alternatives considered
 
-Pending.
+In-memory jobs were rejected as non-durable. Redis/BullMQ was deferred until
+measurements justify the additional service.

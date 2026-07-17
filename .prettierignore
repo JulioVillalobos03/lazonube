@@ -7,3 +7,4 @@ playwright-report
 test-results
 prisma/generated
 package-lock.json
+docs/openapi/openapi.yaml

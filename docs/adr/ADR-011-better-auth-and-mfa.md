@@ -1,21 +1,27 @@
 # ADR-011 — Better Auth and MFA
 
-- Status: proposed
-- Date: 2026-07-16
+- Status: accepted
+- Date: 2026-07-13
 
 ## Context
 
-Authentication is explicitly deferred beyond Phase 0.
+LazoNube needs password, OAuth, persistent sessions, recovery, verification,
+and stronger controls for platform administrators.
 
 ## Decision
 
-Better Auth is installed, but adapter, session, and MFA decisions await the
-product master specification.
+Integrate Better Auth through Nitro and its Prisma adapter. Generate and review
+the user, session, account, and verification models before the first migration.
+Enable email/password and Google OAuth in Phase 1. Store sessions in PostgreSQL
+and expose them only through `httpOnly` cookies. Keep platform roles in the user
+domain. Require MFA for administrative roles before production and a recent
+session for sensitive changes.
 
 ## Consequences
 
-No authentication endpoints or database models exist yet.
+Better Auth handles authentication while module policies remain responsible for
+authorization. Adapter schema compatibility must be reviewed on upgrades.
 
 ## Alternatives considered
 
-Pending.
+Custom authentication and browser-stored bearer tokens were rejected.

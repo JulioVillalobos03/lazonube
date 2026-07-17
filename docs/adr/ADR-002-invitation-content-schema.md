@@ -1,20 +1,28 @@
 # ADR-002 — Invitation Content Schema
 
-- Status: proposed
-- Date: 2026-07-16
+- Status: accepted
+- Date: 2026-07-13
 
 ## Context
 
-Invitation content needs a stable, versioned contract.
+Editable presentation must be versioned without duplicating operational event,
+guest, RSVP, order, or payment data.
 
 ## Decision
 
-Pending the product master specification.
+`InvitationVersion.contentJson` stores a versioned, Zod-validated discriminated
+union of semantic sections. Each section has a stable ULID, registered
+`rendererKey`, enabled state, order, validated content, and limited settings.
+Media is referenced by `assetId`. Operational dates and segments are resolved
+from the Events domain while assembling the public DTO. HTML, JavaScript, Vue
+components, Tailwind classes, and unsanitized URLs are forbidden.
 
 ## Consequences
 
-No invitation models or editor contracts are created during Phase 0.
+Incompatible changes require a new `schemaVersion` and explicit migrator.
+Template changes can preserve compatible semantic content.
 
 ## Alternatives considered
 
-Pending.
+Arbitrary HTML and duplicating the complete public DTO in JSON were rejected
+for security and consistency reasons.

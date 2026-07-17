@@ -1,3 +1,11 @@
+import tailwindcss from '@tailwindcss/vite'
+
+const sentryEnabled = Boolean(
+  process.env.SENTRY_DSN ?? process.env.NUXT_PUBLIC_SENTRY_DSN,
+)
+const sentrySourceMapsEnabled =
+  sentryEnabled && Boolean(process.env.SENTRY_AUTH_TOKEN)
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-13',
@@ -12,13 +20,25 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxt/icon',
     '@vueuse/nuxt',
-    '@nuxtjs/tailwindcss',
     '@sentry/nuxt/module',
   ],
 
+  css: ['~/assets/css/main.css'],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
   i18n: {
-    defaultLocale: 'es',
-    locales: [{ code: 'es', language: 'es-MX', name: 'Español' }],
+    defaultLocale: 'es-MX',
+    locales: [
+      {
+        code: 'es-MX',
+        file: 'es-MX.json',
+        language: 'es-MX',
+        name: 'Español',
+      },
+    ],
   },
 
   typescript: {
@@ -30,6 +50,22 @@ export default defineNuxtConfig({
     preset: 'node-server',
   },
 
+  sentry: {
+    enabled: sentryEnabled,
+    autoInjectServerSentry: 'top-level-import',
+    sourceMapsUploadOptions: {
+      enabled: sentrySourceMapsEnabled,
+      telemetry: false,
+    },
+  },
+
+  sourcemap: sentrySourceMapsEnabled
+    ? {
+        client: 'hidden',
+        server: 'hidden',
+      }
+    : false,
+
   runtimeConfig: {
     appEnv: '',
     appVersion: '',
@@ -38,6 +74,7 @@ export default defineNuxtConfig({
       appUrl: '',
       mediaUrl: '',
       environment: '',
+      sentryDsn: '',
     },
   },
 })

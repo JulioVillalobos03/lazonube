@@ -1,0 +1,68 @@
+openapi: 3.1.1
+info:
+  title: LazoNube API
+  version: 0.0.0-phase-0
+  license:
+    name: Proprietary
+  description: |
+    Phase 0 infrastructure endpoints. Domain API contracts begin in Phase 1
+    under /api/v1.
+servers:
+  - url: http://localhost:3000
+    description: Local development
+security: []
+paths:
+  /up:
+    get:
+      summary: Reports process availability
+      operationId: getUp
+      responses:
+        '200':
+          description: Process is available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpStatus'
+  /health/live:
+    get:
+      summary: Reports application liveness
+      operationId: getLiveness
+      responses:
+        '200':
+          description: Application process is alive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimedStatus'
+  /health/ready:
+    get:
+      summary: Reports PostgreSQL readiness
+      operationId: getReadiness
+      responses:
+        '200':
+          description: Application dependencies are ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimedStatus'
+        '503':
+          description: A required dependency is unavailable
+components:
+  schemas:
+    UpStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          const: ok
+    TimedStatus:
+      type: object
+      required: [status, timestamp]
+      properties:
+        status:
+          type: string
+          enum: [alive, ready]
+        timestamp:
+          type: string
+          format: date-time
