@@ -1,0 +1,9 @@
+.nuxt
+.output
+.output-worker
+node_modules
+coverage
+playwright-report
+test-results
+prisma/generated
+package-lock.json

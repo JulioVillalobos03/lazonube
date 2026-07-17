@@ -1,0 +1,74 @@
+name: E2E
+
+on:
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: lazonube_e2e
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d lazonube_e2e"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      NODE_ENV: test
+      APP_ENV: test
+      APP_URL: http://127.0.0.1:3000
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/lazonube_e2e
+      DIRECT_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/lazonube_e2e
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: 3000
+      PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
+      NUXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+      NUXT_PUBLIC_ENVIRONMENT: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Generate Prisma Client
+        run: npm run prisma:generate
+      - name: Apply migrations
+        run: npm run db:migrate:deploy
+      - name: Build application
+        run: npm run build
+      - name: Start application
+        run: |
+          npm run start > /tmp/lazonube.log 2>&1 &
+          npx wait-on http://127.0.0.1:3000/up --timeout 60000
+      - name: Run E2E tests
+        run: npm run test:e2e
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore
